@@ -1,6 +1,3 @@
-/********************************************************************
- * index.js – Blood-Bank backend (MongoDB + Express)
- ********************************************************************/
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -8,18 +5,20 @@ const path = require('path');
 const csvParser = require('csv-parser');
 const mongoose = require('mongoose');
 const stringSimilarity = require('string-similarity');
-const app = express();
-const PORT = 3000;
 
-app.use(cors()); 
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+/* ─────────── Middleware ─────────── */
+app.use(cors());
 app.use(express.json());
 
 /* ─────────── MongoDB Connection ─────────── */
-mongoose.connect('mongodb+srv://bloodbankuser:Bss3wgcEqzjStdbx@cluster0.sqrt1lp.mongodb.net/bloodbank?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect('your_mongodb_atlas_url_here')
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-/* ─────────── Mongoose Schemas ─────────── */
+/* ─────────── Schemas ─────────── */
 const userSchema = new mongoose.Schema({
   username: String,
   email: String,
@@ -43,17 +42,16 @@ const User = mongoose.model('User', userSchema);
 const Donor = mongoose.model('Donor', donorSchema);
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 
-/* ─────────── Load Q&A ─────────── */
-const qaFile = path.join(__dirname, 'data.json');
+/* ─────────── Chatbot Q&A ─────────── */
 let qaPairs = [];
 try {
-  qaPairs = JSON.parse(fs.readFileSync(qaFile, 'utf-8'));
+  qaPairs = JSON.parse(fs.readFileSync(path.join(__dirname, 'data.json'), 'utf-8'));
   console.log(`✅ Loaded ${qaPairs.length} Q&A pairs`);
 } catch {
-  console.warn('⚠️ No chatbot data.json found');
+  console.warn('⚠️ data.json not found');
 }
 
-/* ─────────── Load Employee CSV ─────────── */
+/* ─────────── CSV Loading ─────────── */
 const empCsvFile = path.join(__dirname, 'employee_data.csv');
 let employees = [];
 function loadEmployeeCSV() {
@@ -80,60 +78,42 @@ function loadEmployeeCSV() {
 }
 loadEmployeeCSV();
 
-/* ════════════ SIGNUP ═══════════ */
+/* ─────────── Routes ─────────── */
 app.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password)
-    return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: 'All fields required' });
 
-  try {
-    const existing = await User.findOne({ email });
-    if (existing)
-      return res.status(400).json({ message: 'Email already registered' });
+  const existing = await User.findOne({ email });
+  if (existing)
+    return res.status(400).json({ message: 'Email already registered' });
 
-    await User.create({ username, email, password });
-    res.json({ success: true, message: 'Signup successful!' });
-  } catch (err) {
-    console.error('❌ Signup error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+  await User.create({ username, email, password });
+  res.json({ success: true, message: 'Signup successful!' });
 });
 
-/* ════════════ LOGIN ═══════════ */
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email, password });
-    if (!user)
-      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+  const user = await User.findOne({ email, password });
+  if (!user)
+    return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
-    res.json({ success: true, message: 'Login successful' });
-  } catch (err) {
-    console.error('❌ Login error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+  res.json({ success: true, message: 'Login successful' });
 });
 
-/* ════════════ DONOR REGISTRATION ═══════════ */
 app.post('/register', async (req, res) => {
   const { name, bloodGroup, email, contact } = req.body;
   if (!name || !bloodGroup || !email || !contact)
     return res.status(400).json({ message: 'All fields required' });
 
-  try {
-    const exists = await Donor.findOne({ email });
-    if (exists)
-      return res.status(400).json({ message: 'Email already registered' });
+  const exists = await Donor.findOne({ email });
+  if (exists)
+    return res.status(400).json({ message: 'Email already registered' });
 
-    await Donor.create({ name, bloodGroup, email, contact });
-    res.json({ message: 'Donor registered successfully!' });
-  } catch (err) {
-    console.error('❌ Donor registration error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+  await Donor.create({ name, bloodGroup, email, contact });
+  res.json({ message: 'Donor registered successfully!' });
 });
 
-/* ════════════ BLOOD INVENTORY (Random) ═══════════ */
 app.get('/inventory', (_, res) => {
   const r = m => Math.floor(Math.random() * m);
   const inventory = {
@@ -143,45 +123,31 @@ app.get('/inventory', (_, res) => {
   res.json(inventory);
 });
 
-/* ════════════ APPOINTMENT SCHEDULING ═══════════ */
 app.post('/appointment', async (req, res) => {
   const { name, email, date, time } = req.body;
   if (!name || !email || !date || !time)
     return res.status(400).json({ message: 'All fields required' });
 
-  try {
-    await Appointment.create({ name, email, date, time });
-    res.json({ message: 'Appointment scheduled successfully!' });
-  } catch (err) {
-    console.error('❌ Appointment error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+  await Appointment.create({ name, email, date, time });
+  res.json({ message: 'Appointment scheduled successfully!' });
 });
 
 app.get('/appointment', async (_, res) => {
-  try {
-    const appointments = await Appointment.find();
-    res.json(appointments);
-  } catch (err) {
-    console.error('❌ Fetch appointments error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+  const appointments = await Appointment.find();
+  res.json(appointments);
 });
 
-/* ════════════ DONOR STORIES (Static) ═══════════ */
 app.get('/stories', (_, res) => res.json([
   { name: 'Rahul Sharma', message: 'Donating blood was great!' },
   { name: 'Neha Patel', message: 'I saved a life today.' },
   { name: 'Arjun Verma', message: 'Easy, fast, fulfilling.' }
 ]));
 
-/* ════════════ CHATBOT (Q&A + CSV Lookup) ═══════════ */
 app.post('/chatbot', (req, res) => {
   const msg = (req.body.message || '').trim().toLowerCase();
   const results = [];
 
   const isNumericId = msg.match(/^\d{5,9}$/);
-
   if (isNumericId) {
     const inputId = msg;
     fs.createReadStream(empCsvFile)
@@ -218,7 +184,15 @@ app.post('/chatbot', (req, res) => {
   res.json({ reply: "🤖 Sorry, I don't have an answer for that." });
 });
 
-/* ════════════ START SERVER ═══════════ */
+/* ─────────── Serve Frontend ─────────── */
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Fallback to index.html for frontend routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
+/* ─────────── Start Server ─────────── */
 app.listen(PORT, () => {
-  console.log(`🚀 Backend running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
