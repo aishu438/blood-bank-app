@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blood Bank Donation</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+   
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fa;
+  }
+
+  .section {
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  #chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    z-index: 999;
+  }
+
+  #chatbot-header {
+    background: #dc3545;
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 10px 10px 0 0;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  #chatbot-body {
+    display: none;
+    background: #f1f1f1;
+    border: 1px solid #ccc;
+    height: 380px;
+    border-radius: 0 0 10px 10px;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+
+  #chat-log {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bot-message, .user-message {
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+  }
+
+  .bot-message {
+    background: #ffffff;
+    align-self: flex-start;
+  }
+
+  .user-message {
+    background: #f20a0a3d;
+    align-self: flex-end;
+    text-align: right;
+  }
+
+  #chat-input {
+    border: none;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .auth-box {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 10px;
+    width: 350px;
+    max-width: 90%;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+
+  .auth-box input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .auth-box button {
+    width: 100%;
+    padding: 12px;
+    background: #e53935;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .auth-box button:hover {
+    background: #c62828;
+  }
+
+  .auth-box a {
+    color: #c62828;
+    cursor: pointer;
+  }
+
+  @media(max-width:768px) {
+    #chatbot {
+      width: 90%;
+      right: 5%;
+    }
+  }
+
+ </style>
+  
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">BloodBank</h1>
+      <nav>
+        <a href="#home">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="facts.html">Facts</a>
+        <a href="call.html">Blood on Call</a>
+        <a href="donors.html">Blood Donors</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="donate.html" class="btn">Donate Now</a>
+        <a href="#" class="btn secondary" id="nav-register">Donor Registration</a>
+        <a href="inventory.html" class="btn btn-danger">View Blood Inventory</a>
+       <!-- Add this inside the <nav> where your buttons are -->
+        <a href="#" class="btn secondary d-none" id="nav-logout" onclick="logout()">Logout</a>
+
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="home" class="hero-slider">
+    <div class="hero-slide active" style="background-image:url('img1.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('img2.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('img3.jpg')"></div>
+    <div class="hero-overlay">
+      <h2>Donate Blood, Save Life</h2>
+      <p>Your blood can give someone another chance at life.</p>
+      <button class="btn" id="cta-register">Register to Donate</button>
+    </div>
+  </section>
+
+  <!-- Sections -->
+  <section id="inventory" class="section">
+    <h2>BLOOD INVENTORY</h2>
+    <p>Many variables can impact our inventory such as weather, holidays or tragic events.</p>
+    <p>Below is an overview of our inventory levels across all blood types.</p>
+    <button class="btn" id="schedule-btn">Schedule Appointment</button>
+  </section>
+
+  <section id="news" class="section">
+    <h2>Latest Blood Donation Drives</h2>
+    <p>Stay updated on upcoming donation camps and events.</p>
+    <a href="drives.html" class="btn">View Drives</a>
+  </section>
+
+  <section id="stories" class="section">
+    <h2>Donor Stories</h2>
+    <p>Read inspiring stories from real blood donors.</p>
+    <a href="stories.html" class="btn">Read Stories</a>
+  </section>
+
+  <section id="eligibility" class="section">
+    <h2>Donation Eligibility</h2>
+    <p>Find out if you're eligible to donate blood today.</p>
+    <a href="eligibility.html" class="btn">Check Now</a>
+  </section>
+
+  <section id="tips" class="section">
+    <h2>Health & Preparation Tips</h2>
+    <p>Learn how to prepare for your next donation and stay healthy.</p>
+    <a href="tips.html" class="btn">View Tips</a>
+  </section>
+
+  <section id="impact" class="section">
+    <h2>Impact of Your Donation</h2>
+    <p>See how your donation saves lives.</p>
+    <a href="impact.html" class="btn">See Impact</a>
+  </section>
+
+  <section id="contact" class="section">
+    <h2>Contact Us</h2>
+    <p>Email: info@bloodbank.org | Phone: 123-456-7890</p>
+    <p>Timing: Mon–Sat, 9:00 AM – 6:00 PM</p>
+    <p>Location: Chennai, India</p>
+  </section>
+
+  <!-- Chatbot -->
+  <div id="chatbot">
+    <div id="chatbot-header">💬 Chat with us</div>
+    <div id="chatbot-body">
+      <div id="chat-log">
+      <div>
+        <button onclick="window.location.href='password-policy.html'" class="btn btn-sm btn-outline-danger mt-2">📜 Password Policy</button>
+      </div>
+      <div class="bot-message">Hi! How can I help you today?<br></div>
+      </div>
+      <input id="chat-input" type="text" placeholder="Type your message…" />
+    </div>
+  </div>
+
+
+  <!-- Login/Signup Modal -->
+  <div id="auth-modal" class="modal-overlay">
+    <div class="auth-box" id="login-form">
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="email-ID" required />
+      <input type="password" id="login-password" placeholder="Password" required />
+      <button id="login-btn">Login</button>
+      <p>Don't have an account? <a id="to-signup">Sign Up</a></p>
+    </div>
+
+    <div class="auth-box" id="signup-form" style="display:none;">
+      <h2>Sign Up</h2>
+      <input type="text" id="signup-username" placeholder="Choose Username" required />
+      <input type="email" id="signup-email" placeholder="Email ID" required />
+      <input type="password" id="signup-password" placeholder="Choose Password" required />
+      <button id="signup-btn">Sign Up</button>
+      <p>Already have an account? <a id="to-login">Login</a></p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 BloodBank. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

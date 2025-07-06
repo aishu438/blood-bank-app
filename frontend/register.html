@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Donor Registration</title>
+
+  <!-- Bootstrap CDN -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+
+  <!-- Your shared stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -------------------------------------------------------- -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">BloodBank</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="donate.html">Donate Now</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Registration Form --------------------------------------------- -->
+  <section class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-4">Donor Registration Form</h2>
+
+      <form id="donorForm" class="row g-3 shadow p-4 bg-white rounded"
+            style="max-width: 600px; margin: auto;">
+        <div class="col-md-6">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="name" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="bloodGroup" class="form-label">Blood Group</label>
+          <select id="bloodGroup" class="form-select" required>
+            <option value="">Choose...</option>
+            <option>A+</option><option>B+</option><option>O+</option><option>AB+</option>
+            <option>A-</option><option>B-</option><option>O-</option><option>AB-</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" required />
+        </div>
+
+        <div class="col-md-6">
+          <label for="contact" class="form-label">Phone Number</label>
+          <input type="tel" class="form-control" id="contact" required />
+        </div>
+
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-danger px-5">Register</button>
+        </div>
+
+        <p id="responseMessage" class="text-center mt-3 fw-bold"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="text-center py-3 bg-dark text-white">
+    &copy; 2025 BloodBank. All rights reserved.
+  </footer>
+
+  <!-- Bootstrap JS (optional for navbar toggle) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ------------------------------------------- -->
+  <!-- Inline script: handles form POST via fetch  -->
+  <!-- ------------------------------------------- -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('donorForm');
+      const msg  = document.getElementById('responseMessage');
+      let timeoutId;
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const donorData = {
+          name:        document.getElementById('name').value.trim(),
+          bloodGroup:  document.getElementById('bloodGroup').value,
+          email:       document.getElementById('email').value.trim(),
+          contact:     document.getElementById('contact').value.trim()
+        };
+
+        fetch('http://localhost:3000/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(donorData)
+        })       
+          .then(res  => res.json())
+          .then(data => {
+            clearTimeout(timeoutId);
+            msg.style.color = 'green';
+            msg.textContent = data.message || 'Registration successful!';
+            form.reset();
+
+            // Show success message for 10 seconds, then clear it
+            timeoutId = setTimeout(() => {
+              msg.textContent = '';
+            }, 30000);
+          })
+          .catch(err => {
+            clearTimeout(timeoutId);
+            console.error(err);
+            msg.style.color = 'red';
+            msg.textContent = 'Something went wrong. Please try again.';
+          });
+      });
+    });
+  </script>
+
+</body>
+</html>

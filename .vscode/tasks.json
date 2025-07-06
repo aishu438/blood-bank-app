@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Backend Server",
+      "type": "shell",
+      "command": "node server.js",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"  // <-- change to your backend folder name
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

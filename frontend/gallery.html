@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery - Blood Bank</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .gallery-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5em;
+      padding: 2em;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .gallery-caption {
+      position: absolute;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      width: 100%;
+      padding: 0.5em;
+      text-align: center;
+      font-size: 0.9em;
+    }
+
+    .section h2 {
+      margin-bottom: 0.5em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container">
+      <h1 class="logo">BloodBank</h1>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="facts.html">Facts</a>
+        <a href="call.html">Blood on Call</a>
+        <a href="donors.html">Blood Donors</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="donate.html" class="btn">Donate Now</a>
+        <a href="register.html" class="btn secondary">Donor Registration</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Gallery Section -->
+  <section class="section" style="margin-top: 70px;">
+    <h2>Our Gallery</h2>
+    <p>Explore moments from our recent donation drives and community events.</p>
+
+    <div class="gallery-container">
+      <div class="gallery-item">
+        <img src="gallery1.jpg" alt="Donation Camp 1">
+        <div class="gallery-caption">Donation Camp - Chennai</div>
+      </div>
+      <div class="gallery-item">
+        <img src="gallery2.jpg" alt="Volunteers Group">
+        <div class="gallery-caption">Our Amazing Volunteers</div>
+      </div>
+      <div class="gallery-item">
+        <img src="gallery3.jpg" alt="Blood Collection">
+        <div class="gallery-caption">Blood Collection In Progress</div>
+      </div>
+      <div class="gallery-item">
+        <img src="gallery4.jpg" alt="Camp Setup">
+        <div class="gallery-caption">Camp Setup Ready for Donors</div>
+      </div>
+      <!-- Add more gallery items as needed -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 BloodBank. All rights reserved.</p>
+  </footer>
+</body>
+</html>
