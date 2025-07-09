@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 /* ─────────── MongoDB Connection ─────────── */
-mongoose.connect('your_mongodb_atlas_url_here')
+mongoose.connect('mongodb+srv://bloodbankuser:Bss3wgcEqzjStdbx@cluster0.sqrt1lp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
@@ -185,11 +185,13 @@ app.post('/chatbot', (req, res) => {
 });
 
 /* ─────────── Serve Frontend ─────────── */
-app.use(express.static(path.join(__dirname, '../frontend')));
+// 👇 This is the critical fix for Render deployment
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
 
-// Fallback to index.html for frontend routes
+// 👇 This catch-all ensures all frontend routes work (about.html, contact.html, etc.)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 /* ─────────── Start Server ─────────── */
