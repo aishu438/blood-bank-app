@@ -2,6 +2,10 @@
  * script.js  –  hero slider  +  chatbot + login/signup
  *********************************************************/
 
+// 🌐 Change this to your backend URL
+const API_BASE_URL = 'https://blood-bank-app-3t3e.onrender.com'; // ✅ Deployed backend
+// const API_BASE_URL = 'http://localhost:3000'; // 🧪 Uncomment for local testing
+
 /* ──────────────── 1. HERO SLIDER ──────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   const slides = document.querySelectorAll('.hero-slide');
@@ -53,7 +57,7 @@ async function sendMessage() {
   chatInput.focus();
 
   try {
-    const res = await fetch('http://localhost:3000/chatbot', {
+    const res = await fetch(`${API_BASE_URL}/chatbot`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text })
@@ -77,7 +81,7 @@ async function handleLogin() {
   if (!email || !password) return alert('Please fill in all fields');
 
   try {
-    const res = await fetch('http://localhost:3000/login', {
+    const res = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -107,7 +111,7 @@ async function handleSignup() {
   if (!username || !email || !password) return alert('Please fill in all fields');
 
   try {
-    const res = await fetch('http://localhost:3000/signup', {
+    const res = await fetch(`${API_BASE_URL}/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password })
