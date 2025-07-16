@@ -189,10 +189,11 @@ app.post('/chatbot', (req, res) => {
 const frontendPath = path.join(__dirname, '../frontend');
 app.use(express.static(frontendPath));
 
-// 👇 This catch-all ensures all frontend routes work (about.html, contact.html, etc.)
+// ✅ Safer catch-all route using /* and absolute path resolution
 app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
+  res.sendFile(path.resolve(frontendPath, 'index.html'));
 });
+
 
 /* ─────────── Start Server ─────────── */
 app.listen(PORT, () => {
